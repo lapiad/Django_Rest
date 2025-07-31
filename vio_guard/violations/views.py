@@ -86,16 +86,6 @@ def addUser(request):
 		return JsonResponse({"message": "User added successfully", "user": {"username": user.username, "id": user.id}})
 	except Exception as e:
 		return HttpResponse({"response": str(e)}, status=500)
-	
-@api_view(['POST'])
-def Image(request):
-	file_name = request.data.get('file_name')
-	violation_id = request.data.get('violation_id')
-	if FileExistsError
-	return JsonResponse({"message": "try again", "student": {"student": student.id, "id": student.id}})
-try:
-except FileExistsError:
-    return JsonResponse({"message": "File already exists. Try again."})
 
 
 
