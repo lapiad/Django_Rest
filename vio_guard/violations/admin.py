@@ -52,4 +52,4 @@ class RefferedToCouncilAdmin(admin.ModelAdmin):
 #addnewuser
 class AddNewUserAdmin(admin.ModelAdmin):
     list
-#notdone
+#notdone~
