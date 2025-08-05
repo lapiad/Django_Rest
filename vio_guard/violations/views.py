@@ -45,7 +45,7 @@ def addViolation(request, student_id):
 @api_view(['PUT'])
 def updateViolation(request, student_id):
     try:
-        violation = Violation.objects.get(student_id=student_id)  # or student_id__id=student_id
+        violation = Violation.objects.get(student_id=student_id)  #for student_id_
         violation_type = request.data.get('violation_type')
 
         if not violation_type:
@@ -86,9 +86,5 @@ def addUser(request):
 		return JsonResponse({"message": "User added successfully", "user": {"username": user.username, "id": user.id}})
 	except Exception as e:
 		return HttpResponse({"response": str(e)}, status=500)
-
-
-
-
 
 	

@@ -8,26 +8,17 @@ class User(BaseModel):
     password: str
 
 class ViolationSummary(BaseModel):
-    total_violations= 10,
-    active_violations= 5,
-    student_violations = 3,
-    resolved_violations = 2,
-    referred_to_council = 3
-
-class datetime(BaseModel):
-    year: int
-    month: int
-    day: int
-    hour:int
-    minute: int
-    second: int
-    auto_now: bool = False
+    total_violations= 9,
+    active_cases= 5,
+    student_involved = 3,
+    resolved = 5,
      
 class Summary(BaseModel):
     summary: list[ViolationSummary]
     generated_by: str  
     generated_at: datetime = Field(default_factory=datetime.utcnow)
- 
+
+#guard
 class Violation(BaseModel):
     id: int
     violation_type: str
