@@ -10,6 +10,7 @@ urlpatterns = [
     path('student-info/<int:student_id>/update-violation/', views.updateViolation),
     path('user-details/', views.getUserDetails, name='get_user_details'),
     path('add-user/', views.addUser, name= 'add_user'),
+    path('guard_dashboard/', views.guard_dashboard, name='guard_dashboard'),
     path('api-auth/', include('rest_framework.urls'))
 ]
 

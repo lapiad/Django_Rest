@@ -5,6 +5,10 @@ from violations.models import User,Violation
 from violations.models import StudentInfo
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.utils import timezone
+from .models import ViolationLogs
+from datetime import timedelta
+from violations.models import ViolationLogs
 import os 
 
 @api_view(['POST'])
@@ -87,4 +91,31 @@ def addUser(request):
 	except Exception as e:
 		return HttpResponse({"response": str(e)}, status=500)
 
-	
+
+#GUARD
+def guard_dashboard(request):
+    today = timezone.now().date()
+    start_of_week = today - timedelta(days=today.weekday())  # Monday
+
+    #Today's violations
+    todays_violations = ViolationLogs.objects.filter(timestamp__date=today)
+
+    #Pending reports
+    pending_reports = ViolationLogs.objects.filter(status='pending')
+
+    #This weeks violations
+    weekly_violations = ViolationLogs.objects.filter(timestamp__date__gte=start_of_week)
+
+    #Daily average (this week)
+    days_passed = (timezone.now().date() - start_of_week).days + 1
+    daily_average = weekly_violations.count() / days_passed
+
+    context = {
+        'todays_violations': todays_violations,
+        'pending_reports': pending_reports,
+        'weekly_violations': weekly_violations,
+        'daily_average': round(daily_average, 2),
+    }
+
+
+
