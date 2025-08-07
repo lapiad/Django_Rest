@@ -9,10 +9,11 @@ from django.utils import timezone
 from .models import ViolationLogs
 from datetime import timedelta
 from violations.models import ViolationLogs
+from violations.models import ScanLog
 import os 
 from .models import Dashboard
 from .serializers import DashboardSerializer
-
+from violations.models import CaseReport
 
 @api_view(['POST'])
 def login(request):
@@ -94,13 +95,56 @@ def addUser(request):
 	except Exception as e:
 		return HttpResponse({"response": str(e)}, status=500)
 
+@api_view(['GET'])
+def saso_dashboard(request):
+    try:
+        total_cases = CaseReport.objects.count()
+        under_review = CaseReport.objects.filter(status='under_review').count()
+        scheduled = CaseReport.objects.filter(status='scheduled').count()
+        pending = CaseReport.objects.filter(status='pending').count()
+
+        return Response({
+            'total_cases': total_cases,
+            'under_review': under_review,
+            'scheduled': scheduled,
+            'pending': pending,
+        })
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+
 #GUARD
-@api_view(['POST'])
+
+@api_view(['GET'])
 def guard_dashboard(request):
     today = timezone.now().date()
 
-    try:
-        todays_violations = ViolationLogs.objects.filter(timestamp__date=today)
-        return Response({'todays_violations': todays_violations.count()})
-    except Exception as e:
-        return Response({'error': str(e)})
+    students_scanned = ScanLog.objects.filter(timestamp__date=today).count()
+    violations_today = ViolationLogs.objects.filter(timestamp__date=today).count()
+
+    return Response({
+        'students_scanned': students_scanned,
+        'violations_today': violations_today,
+    })
+
+
+@api_view(['GET'])
+def recent_scans(request):
+    recent = ScanLog.objects.order_by('-timestamp')[:10]
+    data = []
+
+    for scan in recent:
+        student = scan.student
+        violations = ViolationLogs.objects.filter(student=student).order_by('timestamp')[:3]
+        offense_list = [v.violation_type for v in violations]
+        while len(offense_list) < 3:
+            offense_list.append(None)
+
+        data.append({
+            'student_name': student.full_name,
+            'student_id': student.student_id,
+            'first_offense': offense_list[0],
+            'second_offense': offense_list[1],
+            'third_offense': offense_list[2],
+        })
+
+    return Response(data)

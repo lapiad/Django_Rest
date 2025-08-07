@@ -98,6 +98,51 @@ class UserManagement(models.Model):
     def __str__(self):
         return f"Dashboard Summary: {self.user_management} user management"
     
+class CaseReport(models.Model):
+    STATUS_CHOICES = [
+        ('under_review', 'Under Review'),
+        ('scheduled', 'Scheduled'),
+        ('pending', 'Pending'),
+        ('resolved', 'Resolved'),
+    ]
 
+    case_number = models.CharField(max_length=100, unique=True)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    reported_by = models.CharField(max_length=100)
+    date_reported = models.DateField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
+    def __str__(self):
+        return f"{self.case_number} - {self.title}"
+    
 #guarddashboard
+
+class Student(models.Model):
+    student_id = models.CharField(max_length=20, unique=True)
+    full_name = models.CharField(max_length=100)
+    grade_level = models.CharField(max_length=10)
+
+    def __str__(self):
+        return f"{self.full_name} ({self.student_id})"
+
+
+class ScanLog(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    scanned_by = models.CharField(max_length=50)  # Guard name or ID
+    location = models.CharField(max_length=100, blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Scanned: {self.student} at {self.timestamp}"
+
+
+class ViolationLog(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    violation_type = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    reported_by = models.CharField(max_length=50)  # Guard name or ID
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.violation_type} - {self.student.full_name}"
