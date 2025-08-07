@@ -2,6 +2,13 @@
 from rest_framework import serializers
 from .models import Violation
 from .models import User
+from rest_framework import serializers
+from .models import Dashboard
+
+class DashboardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dashboard
+        fields = '__all__'
 
 class ViolationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,3 +24,4 @@ class ViolationLogAdminView(serializers.ModelSerializer):
         logs = ViolationLog.objects.all()
         serializer = ViolationLogAdminSerializer(logs, many= True)
         return Response(serializer.data)
+    

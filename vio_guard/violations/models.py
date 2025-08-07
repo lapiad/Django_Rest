@@ -60,10 +60,10 @@ class ViolationType(models.Model):
 #admindashboard
 
 class Dashboard(models.Model):
-    total_violations = models.PositiveIntegerField(default=0)
-    active_cases = models.PositiveIntegerField(default=0)
-    student_involved = models.PositiveIntegerField(default=0)
-    resolved = models.PositiveIntegerField(default=0)
+    total_cases = models.PositiveIntegerField(default=0)
+    under_review = models.PositiveIntegerField(default=0)
+    scheduled = models.PositiveIntegerField(default=0)
+    pending = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"Dashboard Summary: {self.total_violations} violations"
@@ -79,8 +79,8 @@ class ViolationLogs(models.Model):
     ]
     guard = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     description = models.TextField()
-    timestamp = models.DateTimeField(default=timezone.now)
-    status = models.CharField(max_length=45, choices=STATUS_CHOICES, default='Pending')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20)
     reported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     def __str__(self):
         return f"{self.violation_type} - {self.status}"
@@ -97,5 +97,7 @@ class UserManagement(models.Model):
 
     def __str__(self):
         return f"Dashboard Summary: {self.user_management} user management"
+    
+
 
 #guarddashboard

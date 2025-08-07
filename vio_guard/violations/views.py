@@ -10,6 +10,9 @@ from .models import ViolationLogs
 from datetime import timedelta
 from violations.models import ViolationLogs
 import os 
+from .models import Dashboard
+from .serializers import DashboardSerializer
+
 
 @api_view(['POST'])
 def login(request):
@@ -91,31 +94,13 @@ def addUser(request):
 	except Exception as e:
 		return HttpResponse({"response": str(e)}, status=500)
 
-
 #GUARD
+@api_view(['POST'])
 def guard_dashboard(request):
     today = timezone.now().date()
-    start_of_week = today - timedelta(days=today.weekday())  # Monday
 
-    #Today's violations
-    todays_violations = ViolationLogs.objects.filter(timestamp__date=today)
-
-    #Pending reports
-    pending_reports = ViolationLogs.objects.filter(status='pending')
-
-    #This weeks violations
-    weekly_violations = ViolationLogs.objects.filter(timestamp__date__gte=start_of_week)
-
-    #Daily average (this week)
-    days_passed = (timezone.now().date() - start_of_week).days + 1
-    daily_average = weekly_violations.count() / days_passed
-
-    context = {
-        'todays_violations': todays_violations,
-        'pending_reports': pending_reports,
-        'weekly_violations': weekly_violations,
-        'daily_average': round(daily_average, 2),
-    }
-
-
-
+    try:
+        todays_violations = ViolationLogs.objects.filter(timestamp__date=today)
+        return Response({'todays_violations': todays_violations.count()})
+    except Exception as e:
+        return Response({'error': str(e)})
